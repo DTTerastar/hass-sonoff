@@ -14,26 +14,15 @@ import time
 import uuid
 
 # named params	
-if not sys.argv[1].startswith('-') and not sys.argv[2].startswith('-'):
-    username = sys.argv[1]
-    password = sys.argv[2]
 
-else:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-u', '--username', help='email/phone number used to login in eWeLink app')
-    parser.add_argument('-p', '--password', help='password for email/account')
+parser=argparse.ArgumentParser()
+parser.add_argument('-u', '--username', 	help='email/phone number used to login in eWeLink app')
+parser.add_argument('-p', '--password', 	help='password for email/account')
+args=parser.parse_args()
 
-    args = parser.parse_args()
-
-    # positional params
-    if hasattr(args, 'username') and hasattr(args, 'password'):
-        username = args.username
-        password = args.password
-
-    else:
-        print('Please read the instructions better!')
-        sys.exit(1)
-
+if not args.username or not args.password:
+	print('Please read the instructions better!')
+	sys.exit(1)
 
 def gen_nonce(length=8):
     """Generate pseudorandom number."""
@@ -52,7 +41,7 @@ def do_login():
     global api_region
 
     app_details = {
-        'password': password,
+        'password': args.password,
         'version': '6',
         'ts': int(time.time()),
         'nonce': gen_nonce(15),
@@ -66,10 +55,10 @@ def do_login():
              '3.9.1', '3.10.0', '3.11.0'])
     }
 
-    if '@' not in username:
-        app_details['phoneNumber'] = username
+    if '@' not in args.username:
+        app_details['phoneNumber'] = args.username
     else:
-        app_details['email'] = username
+        app_details['email'] = args.username
 
     # python3.6+
     decryptedAppSecret = b'6Nz4n0xA8s8qdxQf2GqurZj2Fs55FUvM'
